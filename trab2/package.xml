@@ -1,0 +1,20 @@
+<package>
+  <name>trab2</name>
+  <version>0.0.0</version>
+  <description>trab2</description>
+  <maintainer email="rqmaffei@gmail.com">Renan de Queiroz Maffei</maintainer> 
+  <license>BSD</license>
+  <author email="rqmaffei@gmail.com">Renan de Queiroz Maffei</author>
+
+  <buildtool_depend>catkin</buildtool_depend>
+
+  <build_depend>roscpp</build_depend>
+  <build_depend>tf2</build_depend>
+  <build_depend>sensor_msgs</build_depend>  
+  <build_depend>nav_msgs</build_depend>  
+    
+  <run_depend>roscpp</run_depend>
+  <run_depend>tf2</run_depend>
+  <run_depend>sensor_msgs</run_depend>  
+  <run_depend>nav_msgs</run_depend>  
+</package>

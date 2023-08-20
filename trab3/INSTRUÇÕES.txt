@@ -1,0 +1,51 @@
+_______________________________________________________________________________
+
+    INSTALAÇÃO 
+_______________________________________________________________________________
+    
+1. Instalando e compilando o pacote do ROS do Trabalho 3 dentro do nosso workspace
+    
+1.1. No workspace usada nesta disciplina, copie na pasta src o pacote descompactado 'trab3'. Deverá ficar assim:
+    CAMINHO_DO_WORKSPACE/
+        build/
+        devel/
+        src/
+          rosaria_phi/
+          trab1/ 
+          trab2/
+          trab3/  <--- NOVO PACOTE
+
+1.2. Para compilar os pacotes, basta digitar catkin_make DENTRO DA PASTA PRINCIPAL do workspace. 
+Pode ser necessário repetir o comando algumas vezes para a compilação completar 100% com sucesso.
+    catkin_make
+
+_______________________________________________________________________________
+
+    COMPILANDO O CÓDIGO 
+_______________________________________________________________________________
+
+Sempre que se quiser recompilar o código, basta usar novamente o comando catkin_make.
+Toda vez que esse comando roda, são recompilados os pacotes contendo arquivos que sofreram alguma alteração:
+    catkin_make
+_______________________________________________________________________________
+
+    RODANDO O CÓDIGO 
+_______________________________________________________________________________
+
+1. Primeiro é preciso abrir o simulador MobileSim e selecionar o mapa disponível na pasta 'maps' fornecida dentro do pacote ROS
+
+2. Inicie a conexão com o robô através da RosARIA. Para isso digite em um terminal (sempre dentro do workspace):
+    roslaunch trab3 p3dx-rosaria.launch
+
+Nessa etapa, o robô será ligado no simulador (o campo de visão dele ficará azul) e o visualizador RVIZ será aberto, já mostrando o robô com as leituras dos sensores.
+
+3. Para realizar o mapeamento do ambiente, rode o código do trabalho 2. Abra um segundo terminal e digite:
+    rosrun trab2 mapeamento
+    
+4. Para realizar a exploração, rode o código do trabalho 3 em um novo terminal:
+    rosrun trab3 exploracao
+    
+   Para o robô começar a andar explorando o ambiente, pressione '2'
+   Se quiser andar no modo manual, use as teclas 'w', 'a', 's', 'd'.
+    
+OBS: para visualizar os diferentes mapas, desmarque/marque o topico adequado no RViz

@@ -1,0 +1,25 @@
+<launch>
+  <arg name="urdf" default="$(find rosaria_phi)/description/urdf/p3dx.urdf.xacro" />
+  <param name="robot_description" command="$(find xacro)/xacro $(arg urdf)" />
+
+  <node name="robot_state_publisher" pkg="robot_state_publisher" type="robot_state_publisher" />
+  <node name="joint_state_publisher" pkg="joint_state_publisher" type="joint_state_publisher" />
+
+<!-- ROSARIA -->
+<!--  para rodar em simulação   _port:=localhost -->
+<!--  para rodar com robô real  _port:=192.168.1.11:10002 -->
+
+  <node name="rosaria_phi" pkg="rosaria_phi" type="RosAria" output="screen" args="_sonar_frame:=front_sonar _publish_aria_lasers:=true _port:=192.168.1.11:10002"/>
+
+<!-- Visualizador -->
+  <node name="rviz" pkg="rviz" type="rviz" args="-d $(find trab1)/p3dx.rviz" required="true" />
+
+<!-- SLAM -->
+<!--
+  <node name="slam_gmapping" pkg="gmapping" type="slam_gmapping" args="scan:=rosaria_phi/laser_laserscan">
+    <param name="~delta" value="0.1" />
+    <param name="~map_update_interval" value="2" />
+  </node>
+-->
+
+</launch>
