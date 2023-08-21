@@ -11,7 +11,7 @@ Perception::Perception(ros::NodeHandle& n):
     receivedMap_=false;
     startedMCL_=false;
 
-    numParticles_=10000;
+    numParticles_=30;
     maxRange_ = 10.0;
 
     // construct a trivial random generator engine from a time-based seed:
@@ -37,7 +37,6 @@ void Perception::MCL_sampling(const Action &u)
     /// Odometria definida pela estrutura Action, composta por 3 variaveis double:
     /// rot1, trans e rot2
     std::cout << "rot1 " << RAD2DEG(u.rot1) << " trans " << u.trans << " rot2 " << RAD2DEG(u.rot2) << std::endl;
-
     /// Seguindo o modelo de Thrun, devemos gerar 3 distribuicoes normais, uma para cada componente da odometria
 
     /// Para definir uma distribuição normal X de media M e variancia V, pode-se usar:
@@ -50,42 +49,60 @@ void Perception::MCL_sampling(const Action &u)
     // particles_[i].p.x
     // particles_[i].p.y
     // particles_[i].p.theta
+    std::normal_distribution<double> samplerRot1(u.rot1, 0.1);
+    std::normal_distribution<double> samplerTrans(u.trans, 0.1);
+    std::normal_distribution<double> samplerRot2(u.rot2, 0.1);
+    // particles_.resize(numParticles_);
+        // Propagar cada partícula
+    for (int i = 0; i < numParticles_; ++i) {
+        double rot1 = samplerRot1(*generator_);
+        double trans = samplerTrans(*generator_);
+        double rot2 = samplerRot2(*generator_);
 
-
-
-
-
-
-
-
-
-
+        particles_[i].p.x += trans * cos(particles_[i].p.theta + rot1);
+        particles_[i].p.y += trans * sin(particles_[i].p.theta + rot1);
+        particles_[i].p.theta += rot1 + rot2;
+        }
 }
 
 void Perception::MCL_weighting(const std::vector<float> &z)
 {
    /// TODO: faça a pesagem de todas as particulas
-
+    float var = 25;
     /// 1) elimine particulas fora do espaco livre, dando peso 0
     //       para achar a celula correspondente no grid, compute o indice dela
     //          unsigned int ix = particles_[i].p.x*scale_;
     //          unsigned int iy = particles_[i].p.y*scale_;
     //          unsigned int indice = ix + iy*numCellsX_;
     //       entao teste gridMap_.data[indice] <-- espaco livre tem valor 0
+        double totalWeight = 0.0;
 
+        for (int i = 0; i < numParticles_; ++i) {
+            unsigned int ix = particles_[i].p.x * scale_;
+            unsigned int iy = particles_[i].p.y * scale_;
+            unsigned int indice = ix + iy * numCellsX_;
+
+            if (gridMap_.data[indice] != 0) {
+                particles_[i].w = 0;
+            }
     /// 2) compare as observacoes da particula com as observacoes z do robo e pese-as
     //       Use a funcao computeExpectedMeasurement(k, particles[i].p)
     //       para achar a k-th observacao esperada da particula i
     ///    ao fim, normalize os pesos
-
- 
-
-
-
-
-
-
-
+            else{
+            double weight = 1;
+            for (int k = 0; k < z.size(); k=k+10) {
+                float expectedMeasurement = computeExpectedMeasurement(k, particles_[i].p);
+                    weight *= (1/std::sqrt(2*var*3.1415))*exp((-0.5/var) * pow(z[k] - expectedMeasurement, 2));
+            }
+            particles_[i].w = weight;
+            totalWeight += weight;
+        }
+        }
+        // Normalize os pesos
+        for (int i = 0; i < numParticles_; ++i) {
+            particles_[i].w /= totalWeight;
+        }
 }
 
 void Perception::MCL_resampling()
